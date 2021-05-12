@@ -54,16 +54,16 @@ public class MainActivity extends Activity implements OnClickListener
             if (event.getAction() == MotionEvent.ACTION_DOWN)
                 touch_button("A");
             if (event.getAction() == MotionEvent.ACTION_UP)
-                touch_button("B");
+                touch_button("0");
             return true;
         });
 
         button2.setOnTouchListener((v, event) ->
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN)
-                touch_button("C");
+                touch_button("B");
             if (event.getAction() == MotionEvent.ACTION_UP)
-                touch_button("D");
+                touch_button("0");
             return true;
         });
     }
