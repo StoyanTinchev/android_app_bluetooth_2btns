@@ -1,6 +1,7 @@
 package com.example.app_led_on_off;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,6 +10,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,37 +20,48 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MainActivity extends AppCompatActivity
 {
+    private TextView textView;
 
-    Button button1;
-    Button button2;
-    TextView textView;
+    public static ArrayList<Bluetooths> bluetooth = new ArrayList<>();
+    private int position = -1;
 
-    String address = null, name = null;
+    private BluetoothAdapter myBluetooth = BluetoothAdapter.getDefaultAdapter(); // get the mobile bluetooth adapter
+    private BluetoothSocket btSocket = null;
+    private static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    BluetoothAdapter myBluetooth = null;
-    BluetoothSocket btSocket = null;
-    Set<BluetoothDevice> pairedDevices;
-    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {setw();} catch (Exception e) {e.printStackTrace();}
+        add_bluetooth();
+        sett();
+        getIntentMethod();
+
+        if (position != -1)
+            bluetooth_connect_device(position);
+    }
+
+    private void getIntentMethod()
+    {
+        position = getIntent().getIntExtra("position", -1);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setw() throws IOException
+    private void sett()
     {
-        textView = (TextView) findViewById(R.id.textView1);
-        bluetooth_connect_device();
+        textView = findViewById(R.id.textView1);
 
-
-        button1 = (Button) findViewById(R.id.button1);
-        button2 = (Button) findViewById(R.id.button2);
+        Button button1 = findViewById(R.id.button1);
+        Button button2 = findViewById(R.id.button2);
+        Button bluetoothBTN = findViewById(R.id.bluetoothAdapter);
 
         button1.setOnTouchListener((v, event) ->
         {
@@ -68,50 +82,50 @@ public class MainActivity extends Activity implements OnClickListener
         });
     }
 
-    private void bluetooth_connect_device() throws IOException
+    public void newActivity(View view)
+    {
+        Intent intent = new Intent(this, BluetoothActivity.class);
+        startActivity(intent);
+    }
+
+    private void add_bluetooth()
     {
         try
         {
             myBluetooth = BluetoothAdapter.getDefaultAdapter();
-            address = myBluetooth.getAddress();
-            pairedDevices = myBluetooth.getBondedDevices();
+            Set<BluetoothDevice> pairedDevices = myBluetooth.getBondedDevices();
             if (pairedDevices.size() > 0)
-            {
                 for (BluetoothDevice bt : pairedDevices)
-                {
-                    address = bt.getAddress().toString();
-                    name = bt.getName().toString();
-                    Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
+                    bluetooth.add(new Bluetooths(bt.getName(), bt.getAddress()));
         }
         catch (Exception we)
         {
             we.printStackTrace();
         }
-        myBluetooth = BluetoothAdapter.getDefaultAdapter();//get the mobile bluetooth device
-        BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(address);//connects to the device's address and checks if it's available
-        btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(myUUID);//create a RFCOMM (SPP) connection
-        btSocket.connect();
+    }
 
-        try { textView.setText("BT Name: " + name + "\nBT Address: " + address); }
+    private void bluetooth_connect_device(int possition)
+    {
+        String address = bluetooth.get(possition).getBt_adress();
+        String name = bluetooth.get(possition).getBt_name();
+        BluetoothDevice disposition = myBluetooth.getRemoteDevice(address);//connects to the device's address and checks if it's available
+        try
+        {
+            btSocket = disposition.createInsecureRfcommSocketToServiceRecord(myUUID);//create a RFCOMM (SPP) connection
+            btSocket.connect();
+        }
+        catch (IOException e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        String bt_information = "BT Name: " + name + "\nBT Address: " + address;
+        try { textView.setText(bt_information); }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onClick(View v)
-    {
-        try { }
-        catch (Exception e)
-        {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     private void touch_button(String i)

@@ -51,4 +51,19 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="150dp"/>
 
+    <Button
+            android:text="BLUETOOTH"
+            android:textColor="@color/white"
+            android:background="#6200EE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bluetoothAdapter"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="600dp"
+            android:onClick="newActivity"/>
+
 </RelativeLayout>
