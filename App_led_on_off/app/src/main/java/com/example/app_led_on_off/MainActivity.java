@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity
 
         Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
-        Button bluetoothBTN = findViewById(R.id.bluetoothAdapter);
 
         button1.setOnTouchListener((v, event) ->
         {
@@ -113,17 +112,14 @@ public class MainActivity extends AppCompatActivity
         {
             btSocket = disposition.createInsecureRfcommSocketToServiceRecord(myUUID);//create a RFCOMM (SPP) connection
             btSocket.connect();
+
+            String bt_information = "BT Name: " + name + "\nBT Address: " + address;
+            textView.setText(bt_information);
+            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e)
         {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
-        String bt_information = "BT Name: " + name + "\nBT Address: " + address;
-        try { textView.setText(bt_information); }
-        catch (Exception e)
-        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
